@@ -1,29 +1,24 @@
-<?php      
-    include 'connection.php' ;  
-    if($_SERVER['REQUEST_METHOD']=="POST")
-    {
-      $email=$_POST['email'];
-      $password=$_POST['password'];
+<?php
 
-      if(!empty($email) && !empty($password) && !is_numeric($email))
-      {
-        $query = "select * form login where email='$email' limit 1";
-        $result = mysqli_query($conn,$query);
-        if($result)
-        {
-          if($result && mysqli_num_rows($result) > 0)
-          {
-            $user_data = mysqli_fetch_assoc($result);
-            if($user_data['password']==$password AND $user_data['email']==$email)
-            {
-              header("Location:view.php");
-            }
-          }
-        }
-        header("Location:index.php");
-      }
-      else{
-        echo "<script type='text/javascript'>alert('YOU ARE NOT ADMIN')</script>";
-      }
+    include 'connection.php';
+    $email=$_POST['email'];
+    $password=$_POST['password'];
+
+    $email=stripcslashes($email);
+    $password=stripslashes($password);
+    $username=mysqli_real_escape_string($conn,$email);
+    $password=mysqli_real_escape_string($conn,$password);
+
+    $sql="select * from login where email='$email' and password='$password'";
+    $result=mysqli_query($conn,$sql);
+    $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+    $count=mysqli_num_rows($result);
+
+    if($count==1){
+        header("Location:dashboard.php");
     }
-?>  
+    else{
+        echo"Failed";
+    }
+
+?>
